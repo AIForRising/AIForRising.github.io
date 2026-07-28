@@ -1,10 +1,835 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AIForRising — Open intelligence, on the rise.</title>
+  <meta name="description" content="AIForRising is a collective of engineers and researchers building open, dependable AI — tools that take on the work, so the people behind it can rise." />
+
+  <!-- Replace this mark with your own brand asset when ready -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2307080F'/%3E%3Cpath d='M16 22a7 7 0 0 1 7-7' fill='none' stroke='%23F5B83D' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M16 22a3.2 3.2 0 0 1 3.2-3.2' fill='none' stroke='%23FF8E54' stroke-width='2.4' stroke-linecap='round'/%3E%3Cline x1='4' y1='22' x2='28' y2='22' stroke='%23EDE9DD' stroke-width='1.1'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       TOKENS
+       ============================================================ */
+    :root {
+      /* color — deep blue-violet night + warm rising-sun amber */
+      --ink:      #07080F;
+      --ink-2:    #0B0D18;
+      --ink-3:    #141726;
+      --bone:     #EDE9DD;
+      --bone-2:   #CFCBBD;
+      --mist:     #7E8499;
+      --amber:    #F5B83D;
+      --ember:    #FF8E54;
+
+      --line:     rgba(237, 233, 221, 0.09);
+      --line-2:   rgba(237, 233, 221, 0.16);
+      --amber-soft: rgba(245, 184, 61, 0.12);
+
+      /* type */
+      --f-display: "Space Grotesk", system-ui, sans-serif;
+      --f-serif:   "Instrument Serif", Georgia, serif;
+      --f-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+      /* layout */
+      --maxw: 1180px;
+      --gut: clamp(1.25rem, 4vw, 2.5rem);
+      --section-y: clamp(5rem, 11vh, 9rem);
+
+      --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    /* ============================================================
+       RESET / BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    body {
+      font-family: var(--f-display);
+      background: var(--ink);
+      color: var(--bone);
+      line-height: 1.6;
+      font-size: 17px;
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    /* faint structural atmosphere — a vertical vignette so the ink isn't flat */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(120% 80% at 50% -10%, rgba(245,184,61,0.05), transparent 60%),
+        radial-gradient(100% 60% at 50% 120%, rgba(20, 23, 38, 0.9), transparent 70%);
+      z-index: 0;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+    ::selection { background: var(--amber); color: var(--ink); }
+
+    :focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ============================================================
+       LAYOUT PRIMITIVES
+       ============================================================ */
+    .container {
+      width: 100%;
+      max-width: var(--maxw);
+      margin-inline: auto;
+      padding-inline: var(--gut);
+      position: relative;
+      z-index: 2;
+    }
+
+    .section { padding-block: var(--section-y); position: relative; }
+
+    .eyebrow {
+      font-family: var(--f-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--mist);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 1.6rem;
+      height: 1px;
+      background: var(--line-2);
+    }
+
+    .mono { font-family: var(--f-mono); }
+
+    /* the single characterful face — used with restraint, one accent word */
+    .rise {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--amber);
+      letter-spacing: 0;
+    }
+
+    /* ============================================================
+       BUTTONS
+       ============================================================ */
+    .btn {
+      font-family: var(--f-display);
+      font-size: 0.98rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6em;
+      padding: 0.85em 1.5em;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: transform 0.4s var(--ease), background 0.3s, border-color 0.3s, color 0.3s;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn--primary {
+      background: var(--amber);
+      color: var(--ink);
+      box-shadow: 0 0 0 0 rgba(245, 184, 61, 0.4);
+    }
+    .btn--primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -10px rgba(245, 184, 61, 0.55); }
+    .btn--ghost {
+      background: transparent;
+      color: var(--bone);
+      border-color: var(--line-2);
+    }
+    .btn--ghost:hover { border-color: var(--bone-2); transform: translateY(-2px); }
+    .btn .arr { transition: transform 0.4s var(--ease); }
+    .btn:hover .arr { transform: translateX(3px); }
+
+    /* ============================================================
+       NAV
+       ============================================================ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      transition: background 0.4s var(--ease), border-color 0.4s, backdrop-filter 0.4s;
+      border-bottom: 1px solid transparent;
+    }
+    .nav.is-scrolled {
+      background: rgba(7, 8, 15, 0.72);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      border-bottom-color: var(--line);
+    }
+    .nav__inner {
+      max-width: var(--maxw);
+      margin-inline: auto;
+      padding-inline: var(--gut);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; letter-spacing: -0.02em; font-size: 1.04rem; }
+    .brand__mark { width: 22px; height: 22px; flex: none; }
+    .nav__links { display: flex; align-items: center; gap: 2rem; }
+    .nav__links a.mono {
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      color: var(--bone-2);
+      position: relative;
+      transition: color 0.3s;
+    }
+    .nav__links a.mono::after {
+      content: ""; position: absolute; left: 0; bottom: -6px; height: 1px; width: 0;
+      background: var(--amber); transition: width 0.35s var(--ease);
+    }
+    .nav__links a.mono:hover { color: var(--bone); }
+    .nav__links a.mono:hover::after { width: 100%; }
+    .nav__cta { display: inline-flex; align-items: center; gap: 0.5rem; }
+    @media (max-width: 680px) {
+      .nav__links { display: none; }
+    }
+
+    /* ============================================================
+       HERO
+       ============================================================ */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      padding-block: 8rem 4rem;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    /* the signature: a glowing dawn horizon low in the hero */
+    .horizon {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 14%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(245,184,61,0.15) 18%, var(--amber) 50%, rgba(255,142,84,0.15) 82%, transparent);
+      z-index: 1;
+      box-shadow: 0 0 28px 2px rgba(245, 184, 61, 0.35);
+    }
+    .horizon-glow {
+      position: absolute;
+      left: 50%; bottom: -6%;
+      width: min(110%, 1100px);
+      height: 60%;
+      transform: translateX(-50%);
+      background: radial-gradient(50% 100% at 50% 100%, rgba(245,184,61,0.22), rgba(255,142,84,0.08) 38%, transparent 70%);
+      filter: blur(8px);
+      z-index: 1;
+      animation: breathe 7s var(--ease) infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.85; transform: translateX(-50%) scaleY(1); }
+      50%      { opacity: 1;    transform: translateX(-50%) scaleY(1.06); }
+    }
+    @media (prefers-reduced-motion: reduce) { .horizon-glow { animation: none; } }
+
+    .embers {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .hero__content { max-width: 920px; position: relative; z-index: 3; }
+    .hero__eyebrow { margin-bottom: 2rem; }
+    .hero h1 {
+      font-family: var(--f-display);
+      font-weight: 500;
+      font-size: clamp(2.7rem, 8.4vw, 6.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.035em;
+      margin-bottom: 1.8rem;
+    }
+    .hero h1 .rise { font-size: 1.04em; line-height: 0.92; }
+    .hero__sub {
+      font-size: clamp(1.05rem, 1.5vw, 1.32rem);
+      color: var(--bone-2);
+      max-width: 38ch;
+      line-height: 1.55;
+      margin-bottom: 2.6rem;
+    }
+    .hero__cta { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; }
+    .hero__scroll {
+      position: absolute;
+      left: var(--gut);
+      bottom: 2rem;
+      font-family: var(--f-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mist);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7em;
+      z-index: 3;
+    }
+    .hero__scroll .rail { width: 1px; height: 34px; background: var(--line-2); position: relative; overflow: hidden; }
+    .hero__scroll .rail::after {
+      content: ""; position: absolute; top: -100%; left: 0; width: 100%; height: 60%;
+      background: linear-gradient(var(--amber), transparent);
+      animation: tracked 2.6s var(--ease) infinite;
+    }
+    @keyframes tracked { 0% { top: -60%; } 100% { top: 100%; } }
+    @media (prefers-reduced-motion: reduce) { .hero__scroll .rail::after { animation: none; opacity: 0.4; } }
+    @media (max-width: 680px) { .hero__scroll { display: none; } }
+
+    /* ============================================================
+       TELEMETRY STRIP
+       ============================================================ */
+    .telemetry {
+      border-block: 1px solid var(--line);
+      background: linear-gradient(var(--ink-2), var(--ink));
+    }
+    .telemetry__row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .telemetry__cell {
+      padding: 1.5rem var(--gut);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      border-right: 1px solid var(--line);
+    }
+    .telemetry__cell:last-child { border-right: none; }
+    .telemetry__k {
+      font-family: var(--f-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mist);
+    }
+    .telemetry__v {
+      font-family: var(--f-mono);
+      font-size: 0.95rem;
+      color: var(--bone);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55em;
+    }
+    .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 10px 1px rgba(245,184,61,0.7);
+      animation: blink 2.4s steps(1) infinite;
+    }
+    @keyframes blink { 0%, 60% { opacity: 1; } 70%, 100% { opacity: 0.25; } }
+    @media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+    .telemetry__v a { display: inline-flex; align-items: center; gap: 0.4em; color: var(--bone); }
+    .telemetry__v a:hover { color: var(--amber); }
+    @media (max-width: 760px) {
+      .telemetry__row { grid-template-columns: repeat(2, 1fr); }
+      .telemetry__cell:nth-child(2) { border-right: none; }
+      .telemetry__cell:nth-child(1), .telemetry__cell:nth-child(2) { border-bottom: 1px solid var(--line); }
+    }
+
+    /* ============================================================
+       SECTION HEADER (shared)
+       ============================================================ */
+    .sec-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); max-width: 640px; }
+    .sec-head h2 {
+      font-family: var(--f-display);
+      font-weight: 500;
+      font-size: clamp(1.9rem, 4vw, 3.1rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-top: 1.1rem;
+    }
+    .sec-head p { color: var(--bone-2); margin-top: 1rem; max-width: 52ch; }
+
+    /* ============================================================
+       FOCUS GRID
+       ============================================================ */
+    .focus__grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .focus__card {
+      background: var(--ink);
+      padding: clamp(1.8rem, 3vw, 2.8rem);
+      position: relative;
+      transition: background 0.4s var(--ease);
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+    }
+    .focus__card:hover { background: var(--ink-3); }
+    .focus__tag {
+      font-family: var(--f-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 1.4rem;
+      display: inline-flex; align-items: center; gap: 0.6em;
+    }
+    .focus__tag::before { content: "↗"; color: var(--mist); font-family: var(--f-mono); }
+    .focus__card h3 {
+      font-family: var(--f-display);
+      font-weight: 500;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+    .focus__card p { color: var(--mist); font-size: 0.98rem; line-height: 1.6; max-width: 38ch; }
+    @media (max-width: 720px) { .focus__grid { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       MANIFESTO
+       ============================================================ */
+    .manifesto__list { border-top: 1px solid var(--line); }
+    .principle {
+      display: grid;
+      grid-template-columns: 4rem 1fr;
+      gap: 1.5rem;
+      padding: clamp(1.6rem, 3vw, 2.4rem) 0;
+      border-bottom: 1px solid var(--line);
+      align-items: baseline;
+      transition: padding-left 0.45s var(--ease);
+    }
+    .principle:hover { padding-left: 0.8rem; }
+    .principle__n {
+      font-family: var(--f-mono);
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      color: var(--amber);
+      padding-top: 0.15em;
+    }
+    .principle__body h3 {
+      font-family: var(--f-display);
+      font-weight: 500;
+      font-size: clamp(1.25rem, 2.4vw, 1.85rem);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .principle__body p { color: var(--mist); margin-top: 0.6rem; max-width: 56ch; }
+    @media (max-width: 560px) {
+      .principle { grid-template-columns: 1fr; gap: 0.4rem; }
+      .principle:hover { padding-left: 0; }
+    }
+
+    /* ============================================================
+       WORKSHOP (honest empty state)
+       ============================================================ */
+    .workshop {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: clamp(2.2rem, 5vw, 4rem);
+      background:
+        radial-gradient(80% 120% at 80% 0%, rgba(245,184,61,0.06), transparent 60%),
+        var(--ink-2);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    .workshop h2 {
+      font-family: var(--f-display);
+      font-weight: 500;
+      font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 0.9rem;
+    }
+    .workshop p { color: var(--bone-2); max-width: 44ch; }
+    .workshop__cta { justify-self: end; }
+    @media (max-width: 720px) {
+      .workshop { grid-template-columns: 1fr; }
+      .workshop__cta { justify-self: start; }
+    }
+
+    /* ============================================================
+       CONNECT / FOOTER
+       ============================================================ */
+    .connect { text-align: center; }
+    .connect h2 {
+      font-family: var(--f-display);
+      font-weight: 500;
+      font-size: clamp(2.4rem, 6vw, 4.6rem);
+      letter-spacing: -0.035em;
+      line-height: 1;
+      margin: 1.4rem 0;
+    }
+    .connect p { color: var(--bone-2); max-width: 46ch; margin: 0 auto 2.4rem; }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding-block: 3rem 2.4rem;
+    }
+    .footer__inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .footer__brand { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 600; }
+    .footer__tag { color: var(--mist); font-size: 0.9rem; }
+    .footer__meta { font-family: var(--f-mono); font-size: 0.74rem; color: var(--mist); letter-spacing: 0.05em; }
+    .footer__meta a:hover { color: var(--amber); }
+
+    /* ============================================================
+       SCROLL REVEAL  (no-JS safe: only hides when .js present)
+       ============================================================ */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    }
+    .js .reveal.in { opacity: 1; transform: none; }
+    .js .reveal.d1 { transition-delay: 0.08s; }
+    .js .reveal.d2 { transition-delay: 0.16s; }
+    .js .reveal.d3 { transition-delay: 0.24s; }
+    .js .reveal.d4 { transition-delay: 0.32s; }
+    @media (prefers-reduced-motion: reduce) {
+      .js .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-Hello!
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#top" class="brand" aria-label="AIForRising home">
+        <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 23a8 8 0 0 1 8-8" fill="none" stroke="#F5B83D" stroke-width="2.3" stroke-linecap="round"/>
+          <path d="M16 23a3.6 3.6 0 0 1 3.6-3.6" fill="none" stroke="#FF8E54" stroke-width="2.3" stroke-linecap="round"/>
+          <line x1="3" y1="23" x2="29" y2="23" stroke="#EDE9DD" stroke-width="1.1"/>
+        </svg>
+        AIForRising
+      </a>
+      <div class="nav__links">
+        <a href="#focus" class="mono">Focus</a>
+        <a href="#manifesto" class="mono">Manifesto</a>
+        <a href="#workshop" class="mono">Workshop</a>
+      </div>
+      <a class="btn btn--primary nav__cta" href="https://github.com/AIForRising" target="_blank" rel="noopener">
+        GitHub <span class="arr" aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </nav>
+
+  <main id="top">
+
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <header class="hero">
+      <div class="horizon-glow" aria-hidden="true"></div>
+      <div class="horizon" aria-hidden="true"></div>
+      <canvas class="embers" aria-hidden="true"></canvas>
+
+      <div class="container">
+        <div class="hero__content">
+          <span class="eyebrow hero__eyebrow reveal">AI Collective · Open Intelligence</span>
+          <h1 class="reveal d1">
+            Open intelligence,<br>
+            on the <span class="rise">rise.</span>
+          </h1>
+          <p class="hero__sub reveal d2">
+            AIForRising is a collective of engineers and researchers building open,
+            dependable AI — tools that take on the work, so the people behind it can rise.
+          </p>
+          <div class="hero__cta reveal d3">
+            <a class="btn btn--primary" href="#focus">See what we're building <span class="arr" aria-hidden="true">→</span></a>
+            <a class="btn btn--ghost" href="#manifesto">Read the manifesto</a>
+          </div>
+        </div>
+      </div>
+
+      <span class="hero__scroll" aria-hidden="true">Scroll <span class="rail"></span></span>
+    </header>
+
+    <!-- ============================================================
+         TELEMETRY  ← EDIT values here (keep them truthful)
+         ============================================================ -->
+    <section class="telemetry" aria-label="At a glance">
+      <div class="container" style="padding-inline:0">
+        <div class="telemetry__row">
+          <div class="telemetry__cell">
+            <span class="telemetry__k">Status</span>
+            <span class="telemetry__v"><span class="dot" aria-hidden="true"></span> Systems online</span>
+          </div>
+          <div class="telemetry__cell">
+            <span class="telemetry__k">Founded</span>
+            <span class="telemetry__v">2026</span>
+          </div>
+          <div class="telemetry__cell">
+            <span class="telemetry__k">Charter</span>
+            <span class="telemetry__v">Open-source AI</span>
+          </div>
+          <div class="telemetry__cell">
+            <span class="telemetry__k">Source</span>
+            <span class="telemetry__v"><a href="https://github.com/AIForRising" target="_blank" rel="noopener">github.com/AIForRising <span aria-hidden="true">↗</span></a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FOCUS  ← EDIT: your real areas / linked repos
+         ============================================================ -->
+    <section class="section" id="focus">
+      <div class="container">
+        <div class="sec-head">
+          <span class="eyebrow reveal">What we're building</span>
+          <h2 class="reveal d1">Four directions, one thesis: AI that earns its place in the work.</h2>
+        </div>
+
+        <div class="focus__grid">
+          <article class="focus__card reveal">
+            <span class="focus__tag">Shipping</span>
+            <h3>Applied intelligence</h3>
+            <p>Models and systems built to land in real products — reliable, observable, and genuinely used, not just demoed.</p>
+          </article>
+          <article class="focus__card reveal d1">
+            <span class="focus__tag">Infra</span>
+            <h3>Agent infrastructure</h3>
+            <p>Memory, tooling, and runtime that let agents do long, real work without falling over halfway through.</p>
+          </article>
+          <article class="focus__card reveal d2">
+            <span class="focus__tag">Research</span>
+            <h3>Evals &amp; alignment</h3>
+            <p>Measuring what models actually do, so progress is honest and safety is a property of the system, not a slogan.</p>
+          </article>
+          <article class="focus__card reveal d3">
+            <span class="focus__tag">Community</span>
+            <h3>Open source</h3>
+            <p>Everything we learn, released back — code and writeups, including the parts that didn't work.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         MANIFESTO  ← ordered by priority (numbering is earned)
+         ============================================================ -->
+    <section class="section" id="manifesto" style="padding-top:0">
+      <div class="container">
+        <div class="sec-head">
+          <span class="eyebrow reveal">Manifesto</span>
+          <h2 class="reveal d1">What we hold to.</h2>
+        </div>
+
+        <ol class="manifesto__list" style="list-style:none">
+          <li class="principle reveal">
+            <span class="principle__n">01</span>
+            <div class="principle__body">
+              <h3>Build for the people behind the work.</h3>
+              <p>Tools should lift the person using them — not replace the thinking that makes them good in the first place.</p>
+            </div>
+          </li>
+          <li class="principle reveal">
+            <span class="principle__n">02</span>
+            <div class="principle__body">
+              <h3>Open beats closed.</h3>
+              <p>Research, code, and the hard-won lessons go back to the community. Progress compounds when it's shared.</p>
+            </div>
+          </li>
+          <li class="principle reveal">
+            <span class="principle__n">03</span>
+            <div class="principle__body">
+              <h3>Measure before you claim.</h3>
+              <p>Progress only counts when we can show our work. We publish the eval, not just the headline.</p>
+            </div>
+          </li>
+          <li class="principle reveal">
+            <span class="principle__n">04</span>
+            <div class="principle__body">
+              <h3>Dependability over spectacle.</h3>
+              <p>A model that ships and stays honest beats a demo that wows once and breaks on the second try.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         WORKSHOP  ← honest empty state (replace when repos exist)
+         ============================================================ -->
+    <section class="section" id="workshop" style="padding-top:0">
+      <div class="container">
+        <div class="workshop reveal">
+          <div>
+            <span class="eyebrow" style="margin-bottom:1.2rem">The workshop</span>
+            <h2>Coming online.</h2>
+            <p>We're just getting set up. The first public projects land here soon — follow along on GitHub to be there when they do.</p>
+          </div>
+          <div class="workshop__cta">
+            <a class="btn btn--primary" href="https://github.com/AIForRising" target="_blank" rel="noopener">
+              Visit AIForRising <span class="arr" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CONNECT
+         ============================================================ -->
+    <section class="section connect" id="connect">
+      <div class="container">
+        <span class="eyebrow reveal" style="justify-content:center">Connect</span>
+        <h2 class="reveal d1">Let's <span class="rise">rise</span> together.</h2>
+        <p class="reveal d2">Building something with AI? Want to collaborate, contribute, or just compare notes? Come find us.</p>
+        <a class="btn btn--primary reveal d3" href="https://github.com/AIForRising" target="_blank" rel="noopener">
+          Find us on GitHub <span class="arr" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>
+        <span class="footer__brand">
+          <svg class="brand__mark" viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M16 23a8 8 0 0 1 8-8" fill="none" stroke="#F5B83D" stroke-width="2.3" stroke-linecap="round"/>
+            <path d="M16 23a3.6 3.6 0 0 1 3.6-3.6" fill="none" stroke="#FF8E54" stroke-width="2.3" stroke-linecap="round"/>
+            <line x1="3" y1="23" x2="29" y2="23" stroke="#EDE9DD" stroke-width="1.1"/>
+          </svg>
+          AIForRising
+        </span>
+        <span class="footer__tag" style="margin-left:0.8rem">Open intelligence, on the rise.</span>
+      </div>
+      <span class="footer__meta">© <span id="year">2026</span> AIForRising · <a href="https://github.com/AIForRising" target="_blank" rel="noopener">GitHub</a> · Built open</span>
+    </div>
+  </footer>
+
+  <script>
+    // progressive enhancement flag — reveal only animates when JS runs
+    document.documentElement.classList.remove('no-js');
+    document.documentElement.classList.add('js');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ---------- nav scrolled state ---------- */
+    const nav = document.getElementById('nav');
+    const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    /* ---------- scroll reveal (bulletproof: never leaves content hidden) ---------- */
+    const reveals = Array.from(document.querySelectorAll('.reveal'));
+    const revealAll = () => reveals.forEach((el) => el.classList.add('in'));
+    try {
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        reveals.forEach((el) => io.observe(el));
+        // safety net, independent of the load event (fonts may be slow/blocked):
+        // anything that never intersected is shown shortly after. It is off-screen,
+        // so real users never see it — it just guarantees nothing stays hidden.
+        setTimeout(revealAll, 1500);
+      } else {
+        revealAll();
+      }
+    } catch (err) {
+      revealAll();
+    }
+
+    /* ---------- rising embers — the hero signature ---------- */
+    (function () {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canvas = document.querySelector('.embers');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+      let particles = [];
+
+      const COUNT = reduce ? 0 : Math.min(56, Math.floor(window.innerWidth / 22));
+
+      function size() {
+        const r = canvas.getBoundingClientRect();
+        w = r.width; h = r.height;
+        canvas.width = w * dpr; canvas.height = h * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      function spawn(init) {
+        return {
+          x: Math.random() * w,
+          y: init ? Math.random() * h : h + Math.random() * 40,
+          vy: 0.18 + Math.random() * 0.5,
+          vx: (Math.random() - 0.5) * 0.25,
+          r: Math.random() * 1.7 + 0.4,
+          a: Math.random() * 0.5 + 0.15,
+          tw: Math.random() * Math.PI * 2,        // twinkle phase
+          hue: Math.random() > 0.5 ? 1 : 0        // 0 amber, 1 ember
+        };
+      }
+      function init() {
+        size();
+        particles = Array.from({ length: COUNT }, () => spawn(true));
+      }
+      function frame() {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of particles) {
+          p.y -= p.vy;
+          p.x += p.vx + Math.sin(p.y * 0.01 + p.tw) * 0.15;
+          p.tw += 0.02;
+          const flick = 0.6 + Math.sin(p.tw * 2) * 0.4;
+          if (p.y < -10) Object.assign(p, spawn(false));
+          const col = p.hue ? '255,142,84' : '245,184,61';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(' + col + ',' + (p.a * flick).toFixed(3) + ')';
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = 'rgba(' + col + ',0.6)';
+          ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+        requestAnimationFrame(frame);
+      }
+
+      init();
+      if (reduce) { // draw a single static frame
+        frame(); cancelAnimationFrame(window.requestAnimationFrame(() => {}));
+      } else {
+        frame();
+      }
+      window.addEventListener('resize', () => { init(); }, { passive: true });
+    })();
+  </script>
 </body>
 </html>
